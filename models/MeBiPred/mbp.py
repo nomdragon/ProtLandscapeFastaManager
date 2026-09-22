@@ -6,13 +6,9 @@ from .load_dicts import precoded_kmer_list, precoded_dict_list
 from .iof import encode_fasta, encode_sequence
 from Bio.SeqRecord import SeqRecord
 
-TF_ENABLE_ONEDNN_OPTS=0
-# Standalone version just to predict 
-
 def load_ANN(attribute):
     #encode.mkdir('./ModelPersistency/')
     cwd = os.path.dirname(os.path.abspath(__file__))
-    #print(cwd)
     fname = cwd+'/ModelPersistency/ANNmodel' + str(attribute) + '.json'
     json_file = open(fname, 'r')
     # Load model architechture
