@@ -26,36 +26,3 @@ def load_ANN(attribute):
     #print("Loaded model %s from disk" % attribute)
     json_file.close()
     return loaded_model
-
-#TODO: Take flags for custom ion list 
-def load_MeBiPred_models() -> tuple:
-    metals =  ['CA', 'CO', 'CU', 'FE', 'K', 'MG', 'MN', 'NA', 'NI', 'ZN']
-    models = [load_ANN('T2'+ ion) for ion in metals ]
-    multi_model = load_ANN('Multi')
-    mono_model = load_ANN('Mono')
-    kmer_dict = precoded_kmer_list()
-    dict_list = precoded_dict_list()
-    return (models, mono_model, multi_model, kmer_dict, dict_list)
-
-#TODO: See above
-def mbp_predict_one(sequence: SeqRecord, MeBiPred):
-    #TODO map dict to metal ion chebi codes. current metals represent all oxidation states
-    #receive model components
-    models = MeBiPred[0]
-    mono_model = MeBiPred[1]
-    multi_model = MeBiPred[2]
-    kmer_dict = MeBiPred[3]
-    dict_list = MeBiPred[4]
-    #build task-----------------------------
-    task = (np.delete(encode_sequence(sequence, dict_list, kmer_dict), 0, 1)).astype('float')
-    #predict--------------------------
-    multi_pred = multi_model.predict(task)
-    mono_pred = mono_model.predict(task)
-    multi_pred = multi_model.predict(task)
-    task = np.hstack((task, multi_pred, mono_pred))
-    predictions = [model.predict(task) for model in models]
-    metals =  ['CA', 'CO', 'CU', 'FE', 'K', 'MG', 'MN', 'NA', 'NI', 'ZN']
-    result = {ion: round(float(predictions[j][0][0]), 2) for j, ion in enumerate(metals)}
-    return result
-
-
